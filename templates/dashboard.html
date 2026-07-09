@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Dashboard funcionario</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <main class="shell">
+        <section class="page-header">
+            <div>
+                <p class="eyebrow">Vista operativa</p>
+                <h1>Dashboard funcionario</h1>
+            </div>
+            <div class="header-actions">
+                <a class="btn btn-secondary" href="{{ url_for('index') }}">Inicio</a>
+                <a class="btn btn-primary" href="{{ url_for('nuevo_reporte') }}">Nuevo reporte</a>
+            </div>
+        </section>
+
+        <section class="card">
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Folio</th>
+                            <th>Fecha</th>
+                            <th>Nombre</th>
+                            <th>Telefono</th>
+                            <th>Tipo</th>
+                            <th>Estatus</th>
+                            <th>Canal</th>
+                            <th>Detalle</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for reporte in reportes %}
+                            <tr>
+                                <td>{{ reporte.folio }}</td>
+                                <td>{{ reporte.fecha_reporte.strftime('%d/%m/%Y %H:%M') }}</td>
+                                <td>{{ reporte.nombre }}</td>
+                                <td>{{ reporte.telefono }}</td>
+                                <td>{{ reporte.tipo_reporte }}</td>
+                                <td>
+                                    <span class="status status-{{ reporte.estatus|lower|replace(' ', '-') }}">{{ reporte.estatus }}</span>
+                                </td>
+                                <td>{{ reporte.canal_origen }}</td>
+                                <td>
+                                    <a class="table-link" href="{{ url_for('detalle_reporte', reporte_id=reporte.id) }}">Ver detalle</a>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="8">No hay reportes registrados.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

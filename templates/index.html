@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Reportes Ciudadanos GoTo</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <main class="shell shell-home">
+        <section class="hero-card">
+            <p class="eyebrow">Demo local para atencion ciudadana</p>
+            <h1>Reportes Ciudadanos GoTo</h1>
+            <p class="hero-copy">
+                Registre reportes, consulte estatus por folio o telefono y mantenga actualizado
+                el seguimiento para pruebas con IVR.
+            </p>
+            <div class="cta-group">
+                <a class="btn btn-primary" href="{{ url_for('nuevo_reporte') }}">Nuevo reporte</a>
+                <a class="btn btn-secondary" href="{{ url_for('consulta') }}">Consulta ciudadana</a>
+                <a class="btn btn-secondary" href="{{ url_for('dashboard') }}">Dashboard funcionario</a>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

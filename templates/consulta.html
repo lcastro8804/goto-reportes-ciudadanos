@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Consulta ciudadana</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <main class="shell">
+        <section class="page-header">
+            <div>
+                <p class="eyebrow">Seguimiento ciudadano</p>
+                <h1>Consulta de reportes</h1>
+            </div>
+            <a class="btn btn-secondary" href="{{ url_for('index') }}">Volver al inicio</a>
+        </section>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <section class="flash-stack">
+                    {% for category, message in messages %}
+                        <div class="flash flash-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </section>
+            {% endif %}
+        {% endwith %}
+
+        <section class="card">
+            <form class="lookup-form" method="post">
+                <fieldset class="segmented-control">
+                    <label>
+                        <input type="radio" name="criterio" value="telefono" {% if criterio != 'folio' %}checked{% endif %}>
+                        <span>Telefono</span>
+                    </label>
+                    <label>
+                        <input type="radio" name="criterio" value="folio" {% if criterio == 'folio' %}checked{% endif %}>
+                        <span>Folio</span>
+                    </label>
+                </fieldset>
+                <label class="full-width">
+                    <span>Dato de consulta</span>
+                    <input id="campo-consulta" type="text" name="valor" value="{{ valor }}" placeholder="5527295528" required>
+                </label>
+                <button class="btn btn-primary" type="submit">Consultar</button>
+            </form>
+        </section>
+
+        {% if resultado %}
+            <section class="card result-card">
+                <div class="result-grid">
+                    <article>
+                        <p class="meta-label">Folio</p>
+                        <h2>{{ resultado.folio }}</h2>
+                    </article>
+                    <article>
+                        <p class="meta-label">Tipo de reporte</p>
+                        <h3>{{ resultado.tipo_reporte }}</h3>
+                    </article>
+                    <article>
+                        <p class="meta-label">Estatus</p>
+                        <span class="status status-{{ resultado.estatus|lower|replace(' ', '-') }}">{{ resultado.estatus }}</span>
+                    </article>
+                    <article>
+                        <p class="meta-label">Fecha</p>
+                        <p>{{ resultado.fecha_reporte.strftime('%d/%m/%Y %H:%M') }}</p>
+                    </article>
+                    <article class="full-width">
+                        <p class="meta-label">Direccion</p>
+                        <p>{{ resultado.direccion }}</p>
+                    </article>
+                    <article class="full-width citizen-message">
+                        <p class="meta-label">Mensaje</p>
+                        <p>{{ resultado.mensaje_ciudadano() }}</p>
+                    </article>
+                </div>
+            </section>
+        {% endif %}
+    </main>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

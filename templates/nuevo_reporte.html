@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Nuevo reporte</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <main class="shell">
+        <section class="page-header">
+            <div>
+                <p class="eyebrow">Registro ciudadano</p>
+                <h1>Nuevo reporte</h1>
+            </div>
+            <a class="btn btn-secondary" href="{{ url_for('index') }}">Volver al inicio</a>
+        </section>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <section class="flash-stack">
+                    {% for category, message in messages %}
+                        <div class="flash flash-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </section>
+            {% endif %}
+        {% endwith %}
+
+        <section class="card">
+            <form class="form-grid" method="post">
+                <label>
+                    <span>Nombre</span>
+                    <input type="text" name="nombre" value="{{ form_data.get('nombre', '') }}" required>
+                </label>
+                <label>
+                    <span>Telefono</span>
+                    <input type="tel" name="telefono" value="{{ form_data.get('telefono', '') }}" placeholder="5527295528" required>
+                </label>
+                <label class="full-width">
+                    <span>Direccion</span>
+                    <input type="text" name="direccion" value="{{ form_data.get('direccion', '') }}" required>
+                </label>
+                <label>
+                    <span>Tipo de reporte</span>
+                    <input type="text" name="tipo_reporte" value="{{ form_data.get('tipo_reporte', '') }}" placeholder="Bache" required>
+                </label>
+                <label>
+                    <span>Canal de origen</span>
+                    <select name="canal_origen" required>
+                        <option value="">Seleccione</option>
+                        {% for canal in canales %}
+                            <option value="{{ canal }}" {% if form_data.get('canal_origen') == canal %}selected{% endif %}>
+                                {{ canal }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </label>
+                <label class="full-width">
+                    <span>Descripcion</span>
+                    <textarea name="descripcion" rows="5" required>{{ form_data.get('descripcion', '') }}</textarea>
+                </label>
+                <label class="full-width">
+                    <span>Referencia</span>
+                    <input type="text" name="referencia" value="{{ form_data.get('referencia', '') }}">
+                </label>
+                <div class="full-width form-actions">
+                    <button class="btn btn-primary" type="submit">Guardar reporte</button>
+                </div>
+            </form>
+        </section>
+    </main>
+</body>
+</html>

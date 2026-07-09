@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Detalle del reporte</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <main class="shell">
+        <section class="page-header">
+            <div>
+                <p class="eyebrow">Gestion de seguimiento</p>
+                <h1>Reporte {{ reporte.folio }}</h1>
+            </div>
+            <div class="header-actions">
+                <a class="btn btn-secondary" href="{{ url_for('dashboard') }}">Volver al dashboard</a>
+                <a class="btn btn-secondary" href="{{ url_for('index') }}">Inicio</a>
+            </div>
+        </section>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <section class="flash-stack">
+                    {% for category, message in messages %}
+                        <div class="flash flash-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </section>
+            {% endif %}
+        {% endwith %}
+
+        <section class="detail-layout">
+            <article class="card detail-card">
+                <div class="detail-grid">
+                    <div>
+                        <p class="meta-label">Nombre</p>
+                        <p>{{ reporte.nombre }}</p>
+                    </div>
+                    <div>
+                        <p class="meta-label">Telefono</p>
+                        <p>{{ reporte.telefono }}</p>
+                    </div>
+                    <div>
+                        <p class="meta-label">Direccion</p>
+                        <p>{{ reporte.direccion }}</p>
+                    </div>
+                    <div>
+                        <p class="meta-label">Tipo de reporte</p>
+                        <p>{{ reporte.tipo_reporte }}</p>
+                    </div>
+                    <div>
+                        <p class="meta-label">Referencia</p>
+                        <p>{{ reporte.referencia or 'Sin referencia' }}</p>
+                    </div>
+                    <div>
+                        <p class="meta-label">Canal de origen</p>
+                        <p>{{ reporte.canal_origen }}</p>
+                    </div>
+                    <div class="full-width">
+                        <p class="meta-label">Descripcion</p>
+                        <p>{{ reporte.descripcion }}</p>
+                    </div>
+                    <div>
+                        <p class="meta-label">Fecha de reporte</p>
+                        <p>{{ reporte.fecha_reporte.strftime('%d/%m/%Y %H:%M') }}</p>
+                    </div>
+                    <div>
+                        <p class="meta-label">Ultima actualizacion</p>
+                        <p>{{ reporte.fecha_actualizacion.strftime('%d/%m/%Y %H:%M') }}</p>
+                    </div>
+                </div>
+            </article>
+
+            <article class="card">
+                <h2>Actualizar estatus</h2>
+                <form class="form-grid" method="post">
+                    <label class="full-width">
+                        <span>Estatus</span>
+                        <select name="estatus" required>
+                            {% for estatus in estatus_permitidos %}
+                                <option value="{{ estatus }}" {% if reporte.estatus == estatus %}selected{% endif %}>
+                                    {{ estatus }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </label>
+                    <label class="full-width">
+                        <span>Observaciones</span>
+                        <textarea name="observaciones" rows="7">{{ reporte.observaciones or '' }}</textarea>
+                    </label>
+                    <div class="full-width form-actions">
+                        <button class="btn btn-primary" type="submit">Guardar cambios</button>
+                    </div>
+                </form>
+            </article>
+        </section>
+    </main>
+</body>
+</html>
