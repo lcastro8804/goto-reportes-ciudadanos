@@ -1,6 +1,5 @@
 from datetime import datetime
 
-from app import create_app
 from database import db
 from models import Reporte, normalizar_telefono
 
@@ -10,7 +9,7 @@ def cargar_datos_demo() -> int:
         {
             "folio": "20260001",
             "fecha_reporte": datetime(2026, 1, 10, 9, 0),
-            "nombre": "Juan Perez",
+            "nombre": "Juan Pérez",
             "telefono": "5527295528",
             "direccion": "Av. Central 123",
             "tipo_reporte": "Bache",
@@ -24,7 +23,7 @@ def cargar_datos_demo() -> int:
         {
             "folio": "20260002",
             "fecha_reporte": datetime(2026, 1, 11, 10, 15),
-            "nombre": "Maria Lopez",
+            "nombre": "María López",
             "telefono": "5512345678",
             "direccion": "Calle Norte 45",
             "tipo_reporte": "Alumbrado",
@@ -52,7 +51,7 @@ def cargar_datos_demo() -> int:
         {
             "folio": "20260004",
             "fecha_reporte": datetime(2026, 1, 13, 16, 45),
-            "nombre": "Juan Perez",
+            "nombre": "Juan Pérez",
             "telefono": "5527295528",
             "direccion": "Av. Central 123",
             "tipo_reporte": "Basura",
@@ -84,6 +83,8 @@ def cargar_datos_demo() -> int:
 
 
 if __name__ == "__main__":
+    from app import create_app
+
     app = create_app()
     with app.app_context():
         db.create_all()

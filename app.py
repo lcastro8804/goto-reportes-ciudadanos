@@ -7,6 +7,14 @@ from api import ivr_bp, reportes_api_bp
 from config import Config
 from database import db
 from models import CANALES_PERMITIDOS, ESTATUS_PERMITIDOS, Reporte, normalizar_telefono
+from seed_data import cargar_datos_demo
+
+
+def init_db() -> int:
+    db.create_all()
+    if Reporte.query.count() > 0:
+        return 0
+    return cargar_datos_demo()
 
 
 def create_app() -> Flask:
@@ -17,7 +25,7 @@ def create_app() -> Flask:
     db.init_app(app)
 
     with app.app_context():
-        db.create_all()
+        init_db()
 
     app.register_blueprint(ivr_bp)
     app.register_blueprint(reportes_api_bp)
