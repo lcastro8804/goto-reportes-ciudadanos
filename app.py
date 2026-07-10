@@ -2,16 +2,45 @@ import os
 from pathlib import Path
 
 from flask import Flask, flash, redirect, render_template, request, url_for
+from sqlalchemy import inspect, text
 
 from api import ivr_bp, reportes_api_bp
 from config import Config
 from database import db
 from models import CANALES_PERMITIDOS, ESTATUS_PERMITIDOS, Reporte, normalizar_telefono
 from seed_data import cargar_datos_demo
+from services import GmailImportError, importar_correos_goto_desde_gmail
+
+
+def ensure_reportes_schema() -> None:
+    inspector = inspect(db.engine)
+    if not inspector.has_table("reportes"):
+        return
+
+    columnas = {columna["name"] for columna in inspector.get_columns("reportes")}
+    definiciones = {
+        "telefono_capturado": "ALTER TABLE reportes ADD COLUMN telefono_capturado VARCHAR(20)",
+        "telefono_origen": "ALTER TABLE reportes ADD COLUMN telefono_origen VARCHAR(30)",
+        "email_message_id": "ALTER TABLE reportes ADD COLUMN email_message_id VARCHAR(255)",
+        "fecha_importacion": "ALTER TABLE reportes ADD COLUMN fecha_importacion DATETIME",
+        "origen_importacion": "ALTER TABLE reportes ADD COLUMN origen_importacion VARCHAR(50)",
+    }
+
+    with db.engine.begin() as connection:
+        for columna, ddl in definiciones.items():
+            if columna not in columnas:
+                connection.execute(text(ddl))
+        connection.execute(
+            text(
+                "CREATE UNIQUE INDEX IF NOT EXISTS ix_reportes_email_message_id "
+                "ON reportes (email_message_id)"
+            )
+        )
 
 
 def init_db() -> int:
     db.create_all()
+    ensure_reportes_schema()
     if Reporte.query.count() > 0:
         return 0
     return cargar_datos_demo()
@@ -130,6 +159,34 @@ def register_routes(app: Flask) -> None:
     def dashboard():
         reportes = Reporte.query.order_by(Reporte.fecha_reporte.desc(), Reporte.id.desc()).all()
         return render_template("dashboard.html", reportes=reportes)
+
+    @app.post("/importar-correos-goto")
+    def importar_correos_goto():
+        try:
+            resumen = importar_correos_goto_desde_gmail()
+        except GmailImportError:
+            flash("No fue posible conectarse a Gmail.", "error")
+            return redirect(url_for("dashboard"))
+
+        if resumen["created"]:
+            flash(f"Se importaron {resumen['created']} reportes desde GoTo.", "success")
+        if resumen["reviewed"] == 0:
+            flash("No se encontraron correos nuevos.", "success")
+        if resumen["duplicates"]:
+            flash(f"Se encontraron {resumen['duplicates']} correos duplicados.", "success")
+        if resumen["errors"]:
+            flash(f"Errores detectados: {resumen['errors']}.", "error")
+
+        flash(
+            (
+                f"Correos revisados: {resumen['reviewed']} | "
+                f"Reportes creados: {resumen['created']} | "
+                f"Duplicados: {resumen['duplicates']} | "
+                f"Errores: {resumen['errors']}"
+            ),
+            "success",
+        )
+        return redirect(url_for("dashboard"))
 
     @app.route("/reporte/<int:reporte_id>", methods=["GET", "POST"])
     def detalle_reporte(reporte_id: int):

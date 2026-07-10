@@ -14,10 +14,23 @@
                 <h1>Dashboard funcionario</h1>
             </div>
             <div class="header-actions">
+                <form method="post" action="{{ url_for('importar_correos_goto') }}">
+                    <button class="btn btn-secondary" type="submit">Importar correos GoTo</button>
+                </form>
                 <a class="btn btn-secondary" href="{{ url_for('index') }}">Inicio</a>
                 <a class="btn btn-primary" href="{{ url_for('nuevo_reporte') }}">Nuevo reporte</a>
             </div>
         </section>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <section class="flash-stack">
+                    {% for category, message in messages %}
+                        <div class="flash flash-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </section>
+            {% endif %}
+        {% endwith %}
 
         <section class="card">
             <div class="table-wrap">

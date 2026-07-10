@@ -24,7 +24,18 @@ Aplicacion Flask local para demo de reportes ciudadanos, pensada para integrarse
    pip install -r requirements.txt
    ```
 
-3. Cargar datos demo:
+3. Configurar variables de entorno para Gmail:
+
+   ```powershell
+   copy .env.example .env
+   ```
+
+   Luego ajuste:
+
+   - `GMAIL_USER`
+   - `GMAIL_APP_PASSWORD`
+
+4. Cargar datos demo:
 
    ```powershell
    python seed_data.py
@@ -52,11 +63,19 @@ http://127.0.0.1:5055
 - `/consulta`
 - `/dashboard`
 - `/reporte/<id>`
+- `POST /importar-correos-goto`
 
 ## Endpoints IVR
 
 - `/api/ivr/reporte?telefono=5527295528`
 - `/api/ivr/reporte/folio?folio=20260001`
+
+## Importacion manual de correos GoTo
+
+- Requiere `GMAIL_USER` y `GMAIL_APP_PASSWORD`.
+- Busca correos de `noreply@dwf.goto.com` con asunto `Reporte de servicio`.
+- El dashboard incluye el boton `Importar correos GoTo`.
+- Evita duplicados por `email_message_id`.
 
 ## Datos demo
 

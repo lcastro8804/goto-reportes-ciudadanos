@@ -19,6 +19,9 @@ CANALES_PERMITIDOS = [
     "Presencial",
 ]
 
+ORIGEN_IMPORTACION_CORREO_GOTO = "Correo GoTo"
+CANAL_RECEPCIONISTA_IA_GOTO = "Recepcionista IA GoTo"
+
 
 def normalizar_telefono(valor: str) -> str:
     digitos = re.sub(r"\D", "", valor or "")
@@ -42,6 +45,11 @@ class Reporte(db.Model):
     estatus = db.Column(db.String(30), nullable=False, default="Nuevo")
     observaciones = db.Column(db.Text, nullable=True)
     canal_origen = db.Column(db.String(30), nullable=False)
+    telefono_capturado = db.Column(db.String(20), nullable=True)
+    telefono_origen = db.Column(db.String(30), nullable=True)
+    email_message_id = db.Column(db.String(255), unique=True, nullable=True, index=True)
+    fecha_importacion = db.Column(db.DateTime, nullable=True)
+    origen_importacion = db.Column(db.String(50), nullable=True)
     fecha_actualizacion = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
     def actualizar(self, **campos) -> None:
@@ -69,6 +77,13 @@ class Reporte(db.Model):
             "estatus": self.estatus,
             "observaciones": self.observaciones,
             "canal_origen": self.canal_origen,
+            "telefono_capturado": self.telefono_capturado,
+            "telefono_origen": self.telefono_origen,
+            "email_message_id": self.email_message_id,
+            "fecha_importacion": self.fecha_importacion.strftime("%Y-%m-%d %H:%M")
+            if self.fecha_importacion
+            else None,
+            "origen_importacion": self.origen_importacion,
             "fecha_actualizacion": self.fecha_actualizacion.strftime("%Y-%m-%d %H:%M"),
         }
 
